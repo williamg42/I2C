@@ -81,6 +81,71 @@ uint8_t I2C::read_byte(uint8_t address)
     }
 }
 
+uint8_t I2C::read_byte(uint8_t address)
+{
+    if (fd != -1)
+    {
+        uint8_t buff[BUFFER_SIZE];
+        buff[0] = address;
+        if (write(fd, buff, BUFFER_SIZE) != BUFFER_SIZE)
+        {
+            syslog(LOG_ERR,
+                   "I2C slave 0x%x failed to go to register 0x%x [read_byte():write %d]",
+                   _i2caddr, address, errno);
+            return (-1);
+        }
+        else
+        {
+            if (read(fd, dataBuffer, BUFFER_SIZE) != BUFFER_SIZE)
+            {
+                syslog(LOG_ERR,
+                       "Could not read from I2C slave 0x%x, register 0x%x [read_byte():read %d]",
+                       _i2caddr, address, errno);
+                return (-1);
+            }
+            else
+            {
+                return dataBuffer[0];
+            }
+        }
+    }
+    else
+    {
+        syslog(LOG_ERR, "Device File not available. Aborting read");
+        return (-1);
+    }
+}
+
+uint8_t I2C::read_only()
+{
+    if (fd != -1)
+    {
+
+        
+            if (read(fd, dataBuffer, BUFFER_SIZE) != BUFFER_SIZE)
+            {
+                syslog(LOG_ERR,
+                       "Could not read from I2C slave 0x%x, register 0x%x [read_byte():read %d]",
+                       _i2caddr, address, errno);
+                return (-1);
+            }
+            else
+            {
+                return dataBuffer[0];
+            }
+        
+    }
+    else
+    {
+        syslog(LOG_ERR, "Device File not available. Aborting read");
+        return (-1);
+    }
+}
+
+
+
+
+
 
 uint8_t I2C::read_length(uint8_t address, uint8_t readlength, uint8_t* buffer)
 {
