@@ -81,40 +81,6 @@ uint8_t I2C::read_byte(uint8_t address)
     }
 }
 
-uint8_t I2C::read_byte(uint8_t address)
-{
-    if (fd != -1)
-    {
-        uint8_t buff[BUFFER_SIZE];
-        buff[0] = address;
-        if (write(fd, buff, BUFFER_SIZE) != BUFFER_SIZE)
-        {
-            syslog(LOG_ERR,
-                   "I2C slave 0x%x failed to go to register 0x%x [read_byte():write %d]",
-                   _i2caddr, address, errno);
-            return (-1);
-        }
-        else
-        {
-            if (read(fd, dataBuffer, BUFFER_SIZE) != BUFFER_SIZE)
-            {
-                syslog(LOG_ERR,
-                       "Could not read from I2C slave 0x%x, register 0x%x [read_byte():read %d]",
-                       _i2caddr, address, errno);
-                return (-1);
-            }
-            else
-            {
-                return dataBuffer[0];
-            }
-        }
-    }
-    else
-    {
-        syslog(LOG_ERR, "Device File not available. Aborting read");
-        return (-1);
-    }
-}
 
 uint8_t I2C::read_only()
 {
@@ -197,6 +163,33 @@ uint8_t I2C::write_byte(uint8_t address, uint8_t data)
         buff[0] = address;
         buff[1] = data;
         if (write(fd, buff, sizeof(buff)) != 2)
+        {
+            syslog(LOG_ERR,
+                   "Failed to write to I2C Slave 0x%x @ register 0x%x [write_byte():write %d]",
+                   _i2caddr, address, errno);
+            return (-1);
+        }
+        else
+        {
+            syslog(LOG_INFO, "Wrote to I2C Slave 0x%x @ register 0x%x [0x%x]",
+                   _i2caddr, address, data);
+            return (-1);
+        }
+    }
+    else
+    {
+        syslog(LOG_INFO, "Device File not available. Aborting write");
+        return (-1);
+    }
+    return 0;
+}
+
+uint8_t I2C::write_byte(uint8_t data)
+{
+    if (fd != -1)
+    {
+       
+        if (write(fd, data, sizeof(data)) != 1)
         {
             syslog(LOG_ERR,
                    "Failed to write to I2C Slave 0x%x @ register 0x%x [write_byte():write %d]",
