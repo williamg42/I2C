@@ -91,8 +91,8 @@ uint8_t I2C::read_only()
             if (read(fd, dataBuffer, BUFFER_SIZE) != BUFFER_SIZE)
             {
                 syslog(LOG_ERR,
-                       "Could not read from I2C slave 0x%x, register 0x%x [read_byte():read %d]",
-                       _i2caddr, address, errno);
+                       "Could not read from I2C slave 0x%x [read_byte():read %d]",
+                       _i2caddr, errno);
                 return (-1);
             }
             else
@@ -192,14 +192,14 @@ uint8_t I2C::write_byte(uint8_t data)
         if (write(fd, data, sizeof(data)) != 1)
         {
             syslog(LOG_ERR,
-                   "Failed to write to I2C Slave 0x%x @ register 0x%x [write_byte():write %d]",
-                   _i2caddr, address, errno);
+                   "Failed to write to I2C Slave 0x%x [write_byte():write %d]",
+                   _i2caddr, errno);
             return (-1);
         }
         else
         {
-            syslog(LOG_INFO, "Wrote to I2C Slave 0x%x @ register 0x%x [0x%x]",
-                   _i2caddr, address, data);
+            syslog(LOG_INFO, "Wrote to I2C Slave 0x%x [0x%x]",
+                   _i2caddr, data);
             return (-1);
         }
     }
