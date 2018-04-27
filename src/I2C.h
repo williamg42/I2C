@@ -38,6 +38,7 @@ public:
     uint8_t read_only();
     uint8_t write_byte(uint8_t, uint8_t);
     uint8_t write_byte(uint8_t);
+    uint8_t write_multiplebytes(uint8_t, uint8_t*, uint8_t);
     uint8_t read_length(uint8_t, uint8_t, uint8_t*);
 
 private:

@@ -28,6 +28,7 @@
 #include <unistd.h>
 #include <linux/i2c-dev.h>
 #include <syslog.h>		/* Syslog functionality */
+#include <cstring>
 #include "I2C.h"
 
 I2C::I2C(int bus, int address)
@@ -210,6 +211,36 @@ uint8_t I2C::write_byte(uint8_t data)
     }
     return 0;
 }
+
+uint8_t I2C::write_multiplebytes(uint8_t address, uint8_t *data, uint8_t length)
+{
+    if (fd != -1)
+    {
+        uint8_t buff[length+1];
+        buff[0] = address;
+          std::memcpy(buff+1, data, sizeof (buff));
+        if (write(fd, buff, sizeof(buff)) != (length+1))
+        {
+            syslog(LOG_ERR,
+                   "Failed to write to I2C Slave 0x%x @ register 0x%x [write_byte():write %d]",
+                   _i2caddr, address, errno);
+            return (-1);
+        }
+        else
+        {
+            syslog(LOG_INFO, "Wrote to I2C Slave 0x%x @ register 0x%x [0x%x]",
+                   _i2caddr, address, data[0]);
+            return (-1);
+        }
+    }
+    else
+    {
+        syslog(LOG_INFO, "Device File not available. Aborting write");
+        return (-1);
+    }
+    return 0;
+}
+
 //! Open device file for I2C Device
 void I2C::openfd()
 {
