@@ -189,7 +189,7 @@ uint8_t I2C::write_byte(uint8_t data)
     if (fd != -1)
     {
        
-        if (write(fd, data, sizeof(data)) != 1)
+        if (write(fd, &data, sizeof(data)) != 1)
         {
             syslog(LOG_ERR,
                    "Failed to write to I2C Slave 0x%x [write_byte():write %d]",
